@@ -1,0 +1,16 @@
+{
+  "name": "cherry-blush-bot",
+  "version": "1.0.0",
+  "description": "Bot Discord Cherry Blush — Welcome/Goodbye, Verifikasi, Take Role (Components V2, tema pink)",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "discord.js": "^14.21.0",
+    "dotenv": "^16.4.5"
+  }
+}
