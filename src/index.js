@@ -93,9 +93,12 @@ async function cardPayload(type, member, { ping = false } = {}) {
         ? `Cherry Blush Clan • Member #${guild.memberCount}`
         : `Cherry Blush Clan • Sisa ${guild.memberCount} member`,
   });
-  const file = new AttachmentBuilder(buffer, { name: `${type}-${user.id}.png` });
+  const fileName = `${type}-${user.id}.png`;
+  const file = new AttachmentBuilder(buffer, { name: fileName });
+  const card = type === 'welcome' ? ui.welcomeCard(member, fileName) : ui.goodbyeCard(member, fileName);
   return {
-    content: type === 'welcome' ? `🌸 Hai ${user}, selamat datang di **Cherry Blush**! 💗` : undefined,
+    components: [card],
+    flags: V2,
     files: [file],
     allowedMentions: ping ? { users: [user.id] } : { parse: [] },
   };
