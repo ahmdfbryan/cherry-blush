@@ -11,6 +11,7 @@ const {
 } = require('discord.js');
 const config = require('./config');
 const ui = require('./ui');
+const messenger = require('./messenger');
 
 if (!config.token) {
   console.error('❌ DISCORD_TOKEN belum diisi di file .env');
@@ -48,7 +49,7 @@ const commands = [
     .setDMPermission(false)
     .addSubcommand((s) => s.setName('welcome').setDescription('Kirim contoh welcome ke channel welcome'))
     .addSubcommand((s) => s.setName('goodbye').setDescription('Kirim contoh goodbye ke channel goodbye')),
-].map((c) => c.toJSON());
+].map((c) => c.toJSON()).concat(messenger.commands);
 
 /* ───────────────────────── Ready ───────────────────────── */
 client.once(Events.ClientReady, async (c) => {
@@ -105,7 +106,13 @@ client.on(Events.GuildMemberRemove, async (member) => {
 /* ───────────────────────── Interactions ───────────────────────── */
 client.on(Events.InteractionCreate, async (i) => {
   try {
-    if (i.isChatInputCommand()) return await onCommand(i);
+    if (i.isChatInputCommand()) {
+      if (i.commandName === 'pesan') return await messenger.onCommand(i);
+      return await onCommand(i);
+    }
+    if (i.isMessageContextMenuCommand()) return await messenger.onContext(i);
+    if (i.isModalSubmit() && i.customId.startsWith('cb:msg:')) return await messenger.onModal(i);
+    if (i.isButton() && i.customId.startsWith('cb:msg:')) return await messenger.onButton(i);
     if (i.isButton() && i.customId.startsWith('cb:')) return await onButton(i);
   } catch (err) {
     console.error('❌ Interaction error:', err);
@@ -120,7 +127,7 @@ client.on(Events.InteractionCreate, async (i) => {
 
 function permissionHint(err) {
   if (err?.code === 50013)
-    return 'Bot tidak punya izin untuk mengatur role ini.\nMinta admin memastikan **role bot berada di atas** role yang diberikan & bot punya izin **Manage Roles**.';
+    return 'Bot tidak punya izin untuk melakukan ini.\n• Untuk role: pastikan **role bot berada di atas** role yang diberikan & punya izin **Manage Roles**.\n• Untuk pesan: pastikan bot bisa **View Channel, Send Messages, Attach Files** di channel tersebut.';
   return 'Ada masalah saat memproses permintaanmu. Coba lagi sebentar lagi ya 🙏';
 }
 
