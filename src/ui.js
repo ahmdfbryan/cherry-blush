@@ -33,46 +33,30 @@ function addBanner(container) {
 }
 
 /* ───────────────────────── WELCOME ───────────────────────── */
-function welcomeCard(member) {
-  const { user, guild } = member;
+function welcomeCard(member, fileName) {
+  const { user } = member;
+  const joined = member.joinedTimestamp || Date.now();
   return new ContainerBuilder()
     .setAccentColor(config.colors.primary)
-    .addSectionComponents(
-      new SectionBuilder()
-        .addTextDisplayComponents(
-          text(`## 🌸 Welcome to ${guild.name}!`),
-          text(
-            `Hai ${user}, selamat datang di **Cherry Blush** 💗\n` +
-              `Semoga betah dan nyaman ya di sini~\n\n` +
-              `> 👤 **${user.username}**\n` +
-              `> 🎀 Member ke-**${guild.memberCount}**`,
-          ),
-        )
-        .setThumbnailAccessory(new ThumbnailBuilder().setURL(avatarOf(user))),
+    .addTextDisplayComponents(
+      text(`## WELCOME TO CHERRY BLUSH 🎀`),
+      text(`Hai ${user}, selamat datang~ 💗`),
+    )
+    .addMediaGalleryComponents(
+      new MediaGalleryBuilder().addItems(new MediaGalleryItemBuilder().setURL(`attachment://${fileName}`)),
     )
     .addSeparatorComponents(sep())
-    .addTextDisplayComponents(
-      text(`-# 🍒 Jangan lupa verifikasi dulu ya · Bergabung ${ts(Date.now())}`),
-    );
+    .addTextDisplayComponents(text(`-# 🍒 Jangan lupa verifikasi dulu ya · Bergabung ${ts(joined)}`));
 }
 
 /* ───────────────────────── GOODBYE ───────────────────────── */
-function goodbyeCard(member) {
-  const { user, guild } = member;
+function goodbyeCard(member, fileName) {
   const joined = member.joinedTimestamp ? `Bergabung ${ts(member.joinedTimestamp)}` : 'Waktu bergabung tidak diketahui';
   return new ContainerBuilder()
     .setAccentColor(config.colors.deep)
-    .addSectionComponents(
-      new SectionBuilder()
-        .addTextDisplayComponents(
-          text(`## 🥀 Goodbye, ${user.username}`),
-          text(
-            `**${user.username}** telah meninggalkan **${guild.name}** 💔\n` +
-              `Terima kasih sudah pernah mampir, sampai jumpa lagi~\n\n` +
-              `> 👥 Sisa member: **${guild.memberCount}**`,
-          ),
-        )
-        .setThumbnailAccessory(new ThumbnailBuilder().setURL(avatarOf(user))),
+    .addTextDisplayComponents(text(`## GOODBYE FROM CHERRY BLUSH 🎀`))
+    .addMediaGalleryComponents(
+      new MediaGalleryBuilder().addItems(new MediaGalleryItemBuilder().setURL(`attachment://${fileName}`)),
     )
     .addSeparatorComponents(sep())
     .addTextDisplayComponents(text(`-# 🍂 ${joined} · Keluar ${ts(Date.now())}`));
