@@ -14,6 +14,8 @@ const config = require('./config');
 const ui = require('./ui');
 const messenger = require('./messenger');
 const { renderCard } = require('./card');
+const fs = require('fs');
+const path = require('path');
 
 if (!config.token) {
   console.error('❌ DISCORD_TOKEN belum diisi di file .env');
@@ -161,8 +163,19 @@ async function onCommand(i) {
 
   if (group === 'setup') {
     const target = i.options.getChannel('channel') || i.channel;
-    const container = sub === 'verifikasi' ? ui.verifyPanel(i.guild) : ui.rolePanel(i.guild);
-    await target.send({ components: [container], flags: V2, allowedMentions: { parse: [] } });
+    const bannerName = sub === 'verifikasi' ? 'verification.png' : 'roles.png';
+    const bannerPath = path.join(__dirname, '..', 'assets', 'banners', bannerName);
+    const hasBanner = fs.existsSync(bannerPath);
+    const container =
+      sub === 'verifikasi'
+        ? ui.verifyPanel(i.guild, hasBanner ? bannerName : null)
+        : ui.rolePanel(i.guild, hasBanner ? bannerName : null);
+    await target.send({
+      components: [container],
+      flags: V2,
+      files: hasBanner ? [new AttachmentBuilder(bannerPath, { name: bannerName })] : [],
+      allowedMentions: { parse: [] },
+    });
     return i.reply({
       components: [ui.notice('✅ Panel terkirim', `Panel **${sub}** sudah dikirim ke ${target}.`)],
       flags: EPH,
