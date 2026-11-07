@@ -597,6 +597,17 @@ function avatar(ctx, img, cx, cy, r, initial) {
   }
 }
 
+function grayscale(ctx, contrast = 1.08) {
+  const img = ctx.getImageData(0, 0, W, H);
+  const d = img.data;
+  for (let p = 0; p < d.length; p += 4) {
+    let v = 0.299 * d[p] + 0.587 * d[p + 1] + 0.114 * d[p + 2];
+    v = Math.max(0, Math.min(255, (v - 128) * contrast + 128));
+    d[p] = d[p + 1] = d[p + 2] = v;
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
 /* ─────────────────────────── Generator utama ─────────────────────────── */
 /**
  * @param {'welcome'|'goodbye'} type
@@ -669,6 +680,10 @@ async function renderCard(type, { username, avatarURL, footer }) {
   }
 
   frame(ctx);
+
+  // Goodbye dibuat hitam putih
+  if (type === 'goodbye') grayscale(ctx);
+
   return canvas.toBuffer('image/png');
 }
 
