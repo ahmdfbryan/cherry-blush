@@ -46,11 +46,11 @@ module.exports = {
       group: 'gender',
     },
     {
-      key: 'mole',
+      key: 'mlbb',
       id: '1568719493528817755',
-      label: 'Mole',
-      emoji: '🐹',
-      desc: 'Dapat notif & akses seputar Mole',
+      label: 'Mobile Legends',
+      emoji: '⚔️',
+      desc: 'Untuk player Mobile Legends — mabar, push rank & info event',
       group: null,
     },
     {
