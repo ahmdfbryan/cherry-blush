@@ -25,10 +25,12 @@ function avatarOf(user) {
   return user.displayAvatarURL({ extension: 'png', size: 512 });
 }
 
-function addBanner(container) {
-  if (!config.bannerUrl) return;
+// fileName = nama file banner yang dilampirkan (assets/banners). Kalau tidak ada, pakai BANNER_URL.
+function addBanner(container, fileName) {
+  const url = fileName ? `attachment://${fileName}` : config.bannerUrl;
+  if (!url) return;
   container.addMediaGalleryComponents(
-    new MediaGalleryBuilder().addItems(new MediaGalleryItemBuilder().setURL(config.bannerUrl)),
+    new MediaGalleryBuilder().addItems(new MediaGalleryItemBuilder().setURL(url)),
   );
 }
 
@@ -63,9 +65,9 @@ function goodbyeCard(member, fileName) {
 }
 
 /* ─────────────────────── VERIFICATION ─────────────────────── */
-function verifyPanel(guild) {
+function verifyPanel(guild, bannerFile) {
   const c = new ContainerBuilder().setAccentColor(config.colors.primary);
-  addBanner(c);
+  addBanner(c, bannerFile);
   c.addTextDisplayComponents(
     text(`# 🌸 Cherry Blush Verification`),
     text(
@@ -113,9 +115,9 @@ function notice(title, body, color = config.colors.primary) {
 }
 
 /* ───────────────────────── TAKE ROLE ───────────────────────── */
-function rolePanel(guild) {
+function rolePanel(guild, bannerFile) {
   const c = new ContainerBuilder().setAccentColor(config.colors.soft);
-  addBanner(c);
+  addBanner(c, bannerFile);
   c.addTextDisplayComponents(
     text(`# 🎀 Cherry Blush Roles`),
     text(
