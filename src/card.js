@@ -3,7 +3,6 @@ const path = require('path');
 const { createCanvas, loadImage, GlobalFonts } = require('@napi-rs/canvas');
 
 const FONT_DIR = path.join(__dirname, '..', 'assets', 'fonts');
-GlobalFonts.registerFromPath(path.join(FONT_DIR, 'Sniglet-ExtraBold.ttf'), 'Sniglet');
 GlobalFonts.registerFromPath(path.join(FONT_DIR, 'Fredoka.ttf'), 'Fredoka');
 
 const W = 1024;
@@ -388,10 +387,10 @@ function frame(ctx) {
 function bubbleText(ctx, str, cx, y, opt) {
   const { font, outline, inner = '#ffffff', fill, depth = 6, outlineW, maxWidth } = opt;
   let size = opt.size;
-  ctx.font = `${size}px ${font}`;
+  ctx.font = `700 ${size}px ${font}`;
   while (maxWidth && ctx.measureText(str).width + outlineW > maxWidth && size > opt.minSize) {
     size -= 2;
-    ctx.font = `${size}px ${font}`;
+    ctx.font = `700 ${size}px ${font}`;
   }
   ctx.textAlign = 'center';
   ctx.textBaseline = 'alphabetic';
@@ -567,7 +566,7 @@ function avatar(ctx, img, cx, cy, r, initial) {
     ctx.fillStyle = g;
     ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
     ctx.fillStyle = '#ffffff';
-    ctx.font = `${r}px Sniglet`;
+    ctx.font = `700 ${r}px Fredoka`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(initial, cx, cy + r * 0.05);
@@ -627,12 +626,12 @@ async function renderCard(type, { username, avatarURL, footer }) {
   // ── kanan: teks ──
   const tx = 700;
   const title = bubbleText(ctx, theme.title, tx, 168, {
-    font: 'Sniglet',
-    size: 98,
+    font: 'Fredoka',
+    size: 104,
     minSize: 60,
     maxWidth: 480,
     outline: C.plum,
-    outlineW: 18,
+    outlineW: 16,
     fill: ['#ffd0e7', '#ff8cc6', '#f0559c'],
   });
   crown(ctx, tx - title.width / 2 + 14, title.top - 12, 50, -0.35);
@@ -640,8 +639,8 @@ async function renderCard(type, { username, avatarURL, footer }) {
   heart(ctx, tx + title.width / 2 + 6, title.bottom - 6, 20, { fill: '#ff8cc6', stroke: '#ffffff', rot: 0.3 });
 
   bubbleText(ctx, username, tx, 262, {
-    font: 'Sniglet',
-    size: 64,
+    font: 'Fredoka',
+    size: 60,
     minSize: 28,
     maxWidth: 470,
     outline: C.navy,
