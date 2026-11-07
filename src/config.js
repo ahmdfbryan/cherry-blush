@@ -11,7 +11,7 @@ module.exports = {
     goodbye: env('GOODBYE_CHANNEL_ID', '1568709095907922030'),
   },
 
-  memberRoleId: env('MEMBER_ROLE_ID'),
+  memberRoleId: '1568717262620328168', // 🌸 Member
   bannerUrl: env('BANNER_URL'),
 
   // Palet pink Cherry Blush
@@ -31,7 +31,7 @@ module.exports = {
   takeRoles: [
     {
       key: 'boy',
-      id: env('ROLE_BOY_ID'),
+      id: '1568719134349336658',
       label: 'Boy',
       emoji: '💙',
       desc: 'Untuk member cowok',
@@ -39,7 +39,7 @@ module.exports = {
     },
     {
       key: 'girl',
-      id: env('ROLE_GIRL_ID'),
+      id: '1568719323801850026',
       label: 'Girls',
       emoji: '🎀',
       desc: 'Untuk member cewek',
@@ -47,7 +47,7 @@ module.exports = {
     },
     {
       key: 'mole',
-      id: env('ROLE_MOLE_ID'),
+      id: '1568719493528817755',
       label: 'Mole',
       emoji: '🐹',
       desc: 'Dapat notif & akses seputar Mole',
@@ -55,7 +55,7 @@ module.exports = {
     },
     {
       key: 'fishit',
-      id: env('ROLE_FISHIT_ID'),
+      id: '1568719560113258526',
       label: 'Fish It',
       emoji: '🎣',
       desc: 'Dapat notif & akses seputar Fish It',
