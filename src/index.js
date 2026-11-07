@@ -8,10 +8,12 @@ const {
   SlashCommandBuilder,
   ChannelType,
   ActivityType,
+  AttachmentBuilder,
 } = require('discord.js');
 const config = require('./config');
 const ui = require('./ui');
 const messenger = require('./messenger');
+const { renderCard } = require('./card');
 
 if (!config.token) {
   console.error('❌ DISCORD_TOKEN belum diisi di file .env');
@@ -80,13 +82,32 @@ async function sendTo(channelId, payload) {
   }
 }
 
+// Bikin gambar welcome / goodbye (1024x500) lalu jadikan lampiran pesan
+async function cardPayload(type, member, { ping = false } = {}) {
+  const { user, guild } = member;
+  const buffer = await renderCard(type, {
+    username: user.username,
+    avatarURL: user.displayAvatarURL({ extension: 'png', size: 256, forceStatic: true }),
+    footer:
+      type === 'welcome'
+        ? `Cherry Blush Clan • Member #${guild.memberCount}`
+        : `Cherry Blush Clan • Sisa ${guild.memberCount} member`,
+  });
+  const file = new AttachmentBuilder(buffer, { name: `${type}-${user.id}.png` });
+  return {
+    content: type === 'welcome' ? `🌸 Hai ${user}, selamat datang di **Cherry Blush**! 💗` : undefined,
+    files: [file],
+    allowedMentions: ping ? { users: [user.id] } : { parse: [] },
+  };
+}
+
 client.on(Events.GuildMemberAdd, async (member) => {
   if (member.guild.id !== config.guildId || member.user.bot) return;
-  await sendTo(config.channels.welcome, {
-    components: [ui.welcomeCard(member)],
-    flags: V2,
-    allowedMentions: { users: [member.id] },
-  });
+  try {
+    await sendTo(config.channels.welcome, await cardPayload('welcome', member, { ping: true }));
+  } catch (err) {
+    console.error('❌ Gagal membuat gambar welcome:', err.message);
+  }
 });
 
 client.on(Events.GuildMemberRemove, async (member) => {
@@ -96,11 +117,11 @@ client.on(Events.GuildMemberRemove, async (member) => {
       await member.user.fetch();
     } catch {}
   }
-  await sendTo(config.channels.goodbye, {
-    components: [ui.goodbyeCard(member)],
-    flags: V2,
-    allowedMentions: { parse: [] },
-  });
+  try {
+    await sendTo(config.channels.goodbye, await cardPayload('goodbye', member));
+  } catch (err) {
+    console.error('❌ Gagal membuat gambar goodbye:', err.message);
+  }
 });
 
 /* ───────────────────────── Interactions ───────────────────────── */
@@ -146,13 +167,10 @@ async function onCommand(i) {
   }
 
   if (group === 'test') {
-    const member = i.member;
-    if (sub === 'welcome') {
-      await sendTo(config.channels.welcome, { components: [ui.welcomeCard(member)], flags: V2, allowedMentions: { parse: [] } });
-    } else {
-      await sendTo(config.channels.goodbye, { components: [ui.goodbyeCard(member)], flags: V2, allowedMentions: { parse: [] } });
-    }
-    return i.reply({ components: [ui.notice('✅ Preview terkirim', `Contoh pesan **${sub}** sudah dikirim.`)], flags: EPH });
+    await i.deferReply({ flags: MessageFlags.Ephemeral });
+    const channelId = sub === 'welcome' ? config.channels.welcome : config.channels.goodbye;
+    await sendTo(channelId, await cardPayload(sub, i.member));
+    return i.editReply({ components: [ui.notice('✅ Preview terkirim', `Contoh pesan **${sub}** sudah dikirim.`)], flags: V2 });
   }
 }
 
