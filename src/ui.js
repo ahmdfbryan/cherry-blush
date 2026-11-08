@@ -87,7 +87,7 @@ function verifyPanel(guild, bannerFile) {
   const c = new ContainerBuilder().setAccentColor(config.colors.primary);
   addBanner(c, bannerFile);
   c.addTextDisplayComponents(
-    text(`# 🌸 Cherry Blush Verification`),
+    text(`# ${config.emojis.verification} Cherry Blush Verification`),
     text(
       `Selamat datang di **${guild.name}**! 💗\n` +
         `Untuk menjaga server tetap aman dan nyaman, kamu perlu **verifikasi** terlebih dahulu sebelum bisa melihat channel lainnya.`,
@@ -97,10 +97,10 @@ function verifyPanel(guild, bannerFile) {
     .addTextDisplayComponents(
       text(
         `### 📜 Sebelum verifikasi, pahami dulu:\n` +
-          `🍒 Saling menghargai sesama member\n` +
-          `🍒 Dilarang spam, toxic, SARA & konten NSFW\n` +
-          `🍒 Dilarang promosi tanpa izin staff\n` +
-          `🍒 Ikuti arahan staff & admin`,
+          `${config.emojis.checklist} Saling menghargai sesama member\n` +
+          `${config.emojis.checklist} Dilarang spam, toxic, SARA & konten NSFW\n` +
+          `${config.emojis.checklist} Dilarang promosi tanpa izin staff\n` +
+          `${config.emojis.checklist} Ikuti arahan staff & admin`,
       ),
     )
     .addSeparatorComponents(sep())
