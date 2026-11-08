@@ -52,7 +52,7 @@ module.exports = {
       id: '1568719493528817755',
       label: 'Mobile Legends',
       emoji: '⚔️',
-      desc: 'Untuk player Mobile Legends — mabar, push rank & info event',
+      desc: 'Untuk info mabar, push rank & info event',
       group: null,
     },
     {
