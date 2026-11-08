@@ -163,7 +163,7 @@ function roleRow(r) {
     .setButtonAccessory(
       new ButtonBuilder()
         .setCustomId(`cb:role:${r.key}`)
-        .setLabel(r.label)
+        .setLabel(r.button || r.label)
         .setEmoji(r.emoji)
         .setStyle(ButtonStyle.Secondary),
     );
