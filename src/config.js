@@ -15,6 +15,12 @@ module.exports = {
   memberRoleId: '1568717262620328168', // 🌸 Member
   bannerUrl: env('BANNER_URL'),
 
+  // Emoji custom (diupload di bot / application emoji)
+  emojis: {
+    verification: '<:verification:1568844511336075315>',
+    checklist: '<:checklist:1568844509746438225>',
+  },
+
   // Palet pink Cherry Blush
   colors: {
     primary: 0xff6fae, // cherry pink
