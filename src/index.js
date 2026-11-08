@@ -14,8 +14,7 @@ const config = require('./config');
 const ui = require('./ui');
 const messenger = require('./messenger');
 const { renderCard } = require('./card');
-const fs = require('fs');
-const path = require('path');
+const panels = require('./panels');
 
 if (!config.token) {
   console.error('❌ DISCORD_TOKEN belum diisi di file .env');
@@ -45,7 +44,8 @@ const commands = [
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .setDMPermission(false)
     .addSubcommand((s) => s.setName('verifikasi').setDescription('Kirim panel verifikasi').addChannelOption(channelOpt))
-    .addSubcommand((s) => s.setName('roles').setDescription('Kirim panel take role').addChannelOption(channelOpt)),
+    .addSubcommand((s) => s.setName('roles').setDescription('Kirim panel take role').addChannelOption(channelOpt))
+    .addSubcommand((s) => s.setName('refresh').setDescription('Paksa update ulang semua panel yang sudah terkirim')),
   new SlashCommandBuilder()
     .setName('test')
     .setDescription('Preview pesan welcome / goodbye')
@@ -67,6 +67,9 @@ client.once(Events.ClientReady, async (c) => {
     console.log(`✅ Slash command terdaftar di ${guild.name}`);
     // Simpan data member ke cache supaya deteksi boost akurat
     await guild.members.fetch().catch(() => null);
+    // Update otomatis panel verifikasi / take role kalau tampilannya berubah
+    const result = await panels.sync(guild);
+    for (const r of result) console.log(`🔄 Panel ${r}`);
   } catch (err) {
     console.error('❌ Gagal daftar slash command (cek GUILD_ID & bot sudah di-invite):', err.message);
   }
@@ -182,22 +185,18 @@ async function onCommand(i) {
   const sub = i.options.getSubcommand();
 
   if (group === 'setup') {
+    if (sub === 'refresh') {
+      await i.deferReply({ flags: MessageFlags.Ephemeral });
+      const result = await panels.sync(i.guild, { force: true });
+      return i.editReply({
+        components: [ui.notice('🔄 Refresh panel', result.length ? result.map((r) => `• ${r}`).join('\n') : 'Belum ada panel yang tersimpan. Kirim dulu dengan `/setup verifikasi` atau `/setup roles`.')],
+        flags: V2,
+      });
+    }
     const target = i.options.getChannel('channel') || i.channel;
-    const bannerName = sub === 'verifikasi' ? 'verification.png' : 'roles.png';
-    const bannerPath = path.join(__dirname, '..', 'assets', 'banners', bannerName);
-    const hasBanner = fs.existsSync(bannerPath);
-    const container =
-      sub === 'verifikasi'
-        ? ui.verifyPanel(i.guild, hasBanner ? bannerName : null)
-        : ui.rolePanel(i.guild, hasBanner ? bannerName : null);
-    await target.send({
-      components: [container],
-      flags: V2,
-      files: hasBanner ? [new AttachmentBuilder(bannerPath, { name: bannerName })] : [],
-      allowedMentions: { parse: [] },
-    });
+    await panels.send(sub, target);
     return i.reply({
-      components: [ui.notice('✅ Panel terkirim', `Panel **${sub}** sudah dikirim ke ${target}.`)],
+      components: [ui.notice('✅ Panel terkirim', `Panel **${sub}** sudah dikirim ke ${target}.\nPanel ini akan **ter-update otomatis** setiap ada perubahan, dan panel ${sub} yang lama sudah dihapus.`)],
       flags: EPH,
     });
   }
