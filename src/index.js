@@ -52,7 +52,8 @@ const commands = [
     .setDefaultMemberPermissions(PermissionFlagsBits.ManageGuild)
     .setDMPermission(false)
     .addSubcommand((s) => s.setName('welcome').setDescription('Kirim contoh welcome ke channel welcome'))
-    .addSubcommand((s) => s.setName('goodbye').setDescription('Kirim contoh goodbye ke channel goodbye')),
+    .addSubcommand((s) => s.setName('goodbye').setDescription('Kirim contoh goodbye ke channel goodbye'))
+    .addSubcommand((s) => s.setName('booster').setDescription('Kirim contoh ucapan terima kasih booster')),
 ].map((c) => c.toJSON()).concat(messenger.commands);
 
 /* ───────────────────────── Ready ───────────────────────── */
@@ -64,6 +65,8 @@ client.once(Events.ClientReady, async (c) => {
     const guild = await c.guilds.fetch(config.guildId);
     await guild.commands.set(commands);
     console.log(`✅ Slash command terdaftar di ${guild.name}`);
+    // Simpan data member ke cache supaya deteksi boost akurat
+    await guild.members.fetch().catch(() => null);
   } catch (err) {
     console.error('❌ Gagal daftar slash command (cek GUILD_ID & bot sudah di-invite):', err.message);
   }
@@ -129,6 +132,23 @@ client.on(Events.GuildMemberRemove, async (member) => {
   }
 });
 
+/* ───────────────────────── Booster ───────────────────────── */
+function boostPayload(member, { ping = true } = {}) {
+  return {
+    components: [ui.boostCard(member)],
+    flags: V2,
+    allowedMentions: ping ? { users: [member.id] } : { parse: [] },
+  };
+}
+
+client.on(Events.GuildMemberUpdate, async (oldMember, newMember) => {
+  if (newMember.guild.id !== config.guildId) return;
+  if (oldMember.partial) return; // data lama tidak lengkap, jangan menebak
+  const startedBoosting = !oldMember.premiumSinceTimestamp && newMember.premiumSinceTimestamp;
+  if (!startedBoosting) return;
+  await sendTo(config.channels.boost, boostPayload(newMember));
+});
+
 /* ───────────────────────── Interactions ───────────────────────── */
 client.on(Events.InteractionCreate, async (i) => {
   try {
@@ -184,8 +204,12 @@ async function onCommand(i) {
 
   if (group === 'test') {
     await i.deferReply({ flags: MessageFlags.Ephemeral });
-    const channelId = sub === 'welcome' ? config.channels.welcome : config.channels.goodbye;
-    await sendTo(channelId, await cardPayload(sub, i.member));
+    if (sub === 'booster') {
+      await sendTo(config.channels.boost, boostPayload(i.member, { ping: false }));
+    } else {
+      const channelId = sub === 'welcome' ? config.channels.welcome : config.channels.goodbye;
+      await sendTo(channelId, await cardPayload(sub, i.member));
+    }
     return i.editReply({ components: [ui.notice('✅ Preview terkirim', `Contoh pesan **${sub}** sudah dikirim.`)], flags: V2 });
   }
 }
