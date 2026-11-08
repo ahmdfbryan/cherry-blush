@@ -64,6 +64,24 @@ function goodbyeCard(member, fileName) {
     .addTextDisplayComponents(text(`-# 🍂 ${joined} · Keluar ${ts(Date.now())}`));
 }
 
+/* ───────────────────────── BOOSTER ───────────────────────── */
+function boostCard(member) {
+  const { user } = member;
+  return new ContainerBuilder()
+    .setAccentColor(config.colors.boost)
+    .addSectionComponents(
+      new SectionBuilder()
+        .addTextDisplayComponents(
+          text(`## 💎 THANK YOU FOR BOOSTING!`),
+          text(
+            `Makasih banyak ${user} udah nge-boost **Cherry Blush**! 💗\n` +
+              `Berkat kamu, server ini jadi makin cantik dan makin seru~ 🌸`,
+          ),
+        )
+        .setThumbnailAccessory(new ThumbnailBuilder().setURL(avatarOf(user))),
+    );
+}
+
 /* ─────────────────────── VERIFICATION ─────────────────────── */
 function verifyPanel(guild, bannerFile) {
   const c = new ContainerBuilder().setAccentColor(config.colors.primary);
@@ -161,4 +179,4 @@ function roleResult(member, changes) {
     .addTextDisplayComponents(text(`**Role kamu sekarang:**\n${list}`));
 }
 
-module.exports = { welcomeCard, goodbyeCard, verifyPanel, rolePanel, roleResult, notice };
+module.exports = { welcomeCard, goodbyeCard, boostCard, verifyPanel, rolePanel, roleResult, notice };
