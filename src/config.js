@@ -51,6 +51,7 @@ module.exports = {
       key: 'mlbb',
       id: '1568719493528817755',
       label: 'Mobile Legends',
+      button: 'Mole', // teks di tombol (kalau tidak diisi, pakai label)
       emoji: '⚔️',
       desc: 'Untuk info mabar, push rank & info event',
       group: null,
