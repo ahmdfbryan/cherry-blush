@@ -9,7 +9,7 @@ module.exports = {
   channels: {
     welcome: env('WELCOME_CHANNEL_ID', '1568709095907922030'),
     goodbye: env('GOODBYE_CHANNEL_ID', '1568709095907922030'),
-    boost: env('BOOST_CHANNEL_ID', '1568709095907922030'), // channel ucapan booster
+    boost: env('BOOST_CHANNEL_ID', '1568734390949781524'), // channel ucapan booster
   },
 
   memberRoleId: '1568717262620328168', // 🌸 Member
